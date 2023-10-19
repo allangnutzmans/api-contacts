@@ -3,28 +3,56 @@
 require 'database.php';
 
 // RESPONSE LOGIC
-$endpoint = substr($_SERVER['QUERY_STRING'], 9); // deletes string 'endpoint'
-api_response($endpoint);
-function api_response($endpoint, $parameters = []) {
+$param = [];
+parse_str($_SERVER['QUERY_STRING'], $endpoint); // transformar endpoint em pars_str
+parse_str($_SERVER['QUERY_STRING'], $param);
+api_response($endpoint, $param);
+
+function api_response($endpoint, $param) {
     $method = $_SERVER['REQUEST_METHOD'];
     $data = ['method' => $method,
             'endpoint' => $endpoint,
-            'data' => api_methods($endpoint, $method, $parameters)
+            'data' => api_methods($endpoint, $method,  $param)
         ];
     header("Content-Type:application/json"); // This means that the browser will interpret the response as JSON data
     echo json_encode($data); // return the JSON of the object data;
 }
 
 //methods = ['GET', 'POST', 'PATCH', 'DELETE'];
-function api_methods($endpoint, $method, $parameters)
+function api_methods($endpoint, $method, $param)
 {
     // GET (read)
-    if ($method == 'GET') {
-        return get_method($endpoint, $parameters);
+    if ($method == 'GET' && (count($param) == 1)) {
+        return get_all_contacts($endpoint);
+    }elseif ($method == 'GET' && (count($param)) > 1){
+        return get_contact($endpoint, $param);
     }
+
     // POST
     if ($method == 'POST') {
-        return post_method($endpoint, $parameters);
+        return post_method($endpoint, $param);
+
+    }
+    return [
+        'status' => 'FAIL',
+        'message' => 'NON-EXISTENT ENDPOINT',
+    ];
+}
+//ENDPOINTS
+function get_all_contacts($endpoint)
+{
+    if ($endpoint['endpoint'] == 'status' || $endpoint == null) {
+        return [
+            'status' => 'SUCCESS',
+            'message' => 'API RUNNING OK!',
+        ];
+    }
+    if ($endpoint['endpoint']== 'contact') {
+        return [
+            'status' => 'SUCCESS',
+            'message' => 'API connected to the DB',
+            'db_data' => QUERY_EXE("SELECT * FROM contacts"),
+        ];
     }
     return [
         'status' => 'FAIL',
@@ -32,51 +60,32 @@ function api_methods($endpoint, $method, $parameters)
     ];
 }
 
-
-
-//ENDPOINTS
-function get_method($endpoint, $parameters)
-{
-    if ($endpoint == 'status' || $endpoint == null) {
-        return [
-            'status' => 'SUCCESS',
-            'message' => 'API RUNNING OK!',
-        ];
-    }
-    if ($endpoint == 'contact') {
-        return [
-            'status' => 'SUCCESS',
-            'message' => 'API connected to the DB',
-            'db_data' => QUERY_EXE("SELECT * FROM contacts"),
-        ];
-    }
-    if (array_key_exists('exclusive', $parameters)){
-
+function get_contact($endpoint, $params){
         //More query string parameters
-        parse_str($_SERVER['QUERY_STRING'], $param); //deixa passar qqlr string por isso OFF
         $query = 'SELECT * FROM contacts WHERE';
         $column = [];
-        if (array_key_exists('name', $param)) {
-            $column[] = "name LIKE '%". $param['name'] . "%'";
+        if (array_key_exists('name', $params)) {
+            if(filter_var($params['name']))
+            $column[] = "name LIKE '%". $params['name'] . "%'";
         }
-        if (array_key_exists('address', $param)) {
-            $column[] = "address LIKE '%". $param['address'] . "%'";
+        if (array_key_exists('address', $params)) {
+            $column[] = "address LIKE '%". $params['address'] . "%'";
         }
-        if (array_key_exists('phone', $param)) {
-            $column[] = "phone LIKE '%" . $param['phone'] . "%'";
+        if (array_key_exists('phone', $params)) {
+            $column[] = "phone LIKE '%" . $params['phone'] . "%'";
         }
 
         if (!empty($column)) {
-            if (filter_var($parameters['exclusive'], FILTER_VALIDATE_BOOL == false)) {
-                $query .= ' ' . implode(' AND ', $column); //AND (specific) e OR (all) colocar uma função aqui ou crar uma nova função //um botao que vem do front
+                $query .= ' ' . implode(' OR ', $column); //AND (specific) e OR (all) colocar uma função para colocar o and
                 return [
                     'status' => 'SUCCESS',
                     'message' => 'Results of your search: ',
                     'db_data' => QUERY_EXE($query),
                 ];
             }
-            if (filter_var($parameters['exclusive'], FILTER_VALIDATE_BOOL == true)) {
-                $query .= ' ' . implode(' OR ', $column); //AND (specific) e OR (all) colocar uma função aqui ou crar uma nova função //um botao que vem do front
+        if (array_key_exists('id', $params)){
+            if (filter_var('id', FILTER_VALIDATE_INT)){
+                $query .= "AND id = ". intval($params['id']);
                 return [
                     'status' => 'SUCCESS',
                     'message' => 'Results of your search: ',
@@ -84,7 +93,7 @@ function get_method($endpoint, $parameters)
                 ];
             }
         }
-    }
+
     return [
         'status' => 'FAIL',
         'message' => 'NON-EXISTENT ENDPOINT',
@@ -135,3 +144,4 @@ function post_method($endpoint, $param = [])
         'message' => 'NON-EXISTENT ENDPOINT',
     ];
 }
+
