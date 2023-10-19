@@ -14,7 +14,7 @@ function api_request($endpoint, $method = 'GET', $variables = []){
     }
     //POST - R
     if($method == 'POST'){
-        //$variables = array_merge() ?? => q faz iss
+        $variables = array_merge() ?? //=> q faz iss
     }
     //PATCH - U
 
@@ -28,7 +28,6 @@ function api_request($endpoint, $method = 'GET', $variables = []){
 
 }
 
-$call = api_request('contact', 'GET', ['exclusive' => true]);
-var_dump($call);
+$call = api_request('contact', 'GET', '');
 
 include_once 'frontend.php';
