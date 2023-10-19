@@ -17,9 +17,31 @@ echo $result;
 curl_close($curl);
 
 */
-$param['name'] = 'gabriel';
 
-$column[] = "name LIKE '%". $param['name'] . "%'";
-$query = 'SELECT * FROM contacts WHERE ';
-$query .= ' ' . implode(' OR', $column);
-echo $query;
+// Create a cURL handle
+$ch = curl_init();
+
+// Set the cURL options
+curl_setopt($ch, CURLOPT_URL, 'http://myapi.com/api.php'); // Replace with your API endpoint
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, 'key1=value1&key2=value2'); // Replace with your POST data
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Execute the cURL session
+$response = curl_exec($ch);
+
+// Check for cURL errors
+if (curl_errno($ch)) {
+    echo 'cURL Error: ' . curl_error($ch);
+}
+
+// Close the cURL session
+curl_close($ch);
+
+// Handle the response
+if ($response === false) {
+    echo 'cURL request failed';
+} else {
+    echo 'Response: ' . $response;
+}
+?>

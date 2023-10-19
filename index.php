@@ -14,7 +14,9 @@ function api_request($endpoint, $method = 'GET', $variables = []){
     }
     //POST - R
     if($method == 'POST'){
-        $variables = array_merge() ?? //=> q faz iss
+        $variables = json_decode(file_get_contents("php://input"));
+        $variables = array_merge(['endpoint' => $endpoint], $variables);
+        curl_setopt($client, CURLOPT_POSTFIELDS, $variables);
     }
     //PATCH - U
 
@@ -28,6 +30,6 @@ function api_request($endpoint, $method = 'GET', $variables = []){
 
 }
 
-$call = api_request('contact', 'GET', '');
+//$call = api_request('contact', 'GET', '');
 
 include_once 'frontend.php';

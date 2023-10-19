@@ -1,5 +1,6 @@
 <?php
 function QUERY_EXE($query, $params = null){
+
     $dsn = "mysql:dbname=contacts;host=127.0.0.1;";
     $user = 'allan';
     $password = 'admin';
