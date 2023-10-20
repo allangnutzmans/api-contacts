@@ -19,6 +19,11 @@ function api_request($endpoint, $method = 'GET', $variables = []){
         curl_setopt($client, CURLOPT_POSTFIELDS, $variables);
     }
     //PATCH - U
+    if($method == 'PATCH'){
+        $variables = json_decode(file_get_contents("php://input"));
+        $variables = array_merge(['endpoint' => $endpoint], $variables);
+        curl_setopt($client, CURLOPT_POSTFIELDS, $variables);
+    }
 
     //DELETE - D
 

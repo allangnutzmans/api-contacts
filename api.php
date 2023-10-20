@@ -31,16 +31,26 @@ function api_methods($endpoint, $method)
     if (($method == 'GET' && (count($endpoint) == 1)) || $endpoint == null) {
         return get_all_contacts($endpoint);
 
-    }elseif ($method == 'GET' && (count($endpoint)) > 1){
+    }//elseif (){}
+    elseif ($method == 'GET' && (count($endpoint)) > 1){
         return get_contact($endpoint);
     }
     // POST
     if ($method == 'POST') {
         return post_new_contact($endpoint);
     }
+
+    if ($method == 'PUT'){
+        return put_contact($endpoint);
+    }
+
+    if($method == 'DELETE'){
+        return delete_contact($endpoint);
+    }
+
     return [
         'status' => 'FAIL',
-        'message' => 'failed to entry new endpoint',
+        'message' => 'failed to process the request',
     ];
 }
 //ENDPOINTS
@@ -60,59 +70,61 @@ function get_all_contacts($endpoint)
 }
 
 function get_contact($endpoint){
-        //More query string parameters
-        $query = 'SELECT * FROM contacts WHERE';
-        $column = [];
-        if (array_key_exists('name', $endpoint)) {
-            if(filter_var($endpoint['name']))
-            $column[] = "name LIKE '%". $endpoint['name'] . "%'";
-        }
-        if (array_key_exists('address', $endpoint)) {
-            $column[] = "address LIKE '%". $endpoint['address'] . "%'";
-        }
-        if (array_key_exists('phone', $endpoint)) {
-            $column[] = "phone LIKE '%" . $endpoint['phone'] . "%'";
-        }
-
-        if (!empty($column)) {
-                $query .= ' ' . implode(' OR ', $column); //AND (specific) e OR (all) colocar uma função para colocar o and
-                return [
-                    'status' => 'SUCCESS',
-                    'message' => 'Results of your search: ',
-                    'db_data' => QUERY_EXE($query),
-                ];
-        }
-
+    $query = "SELECT * FROM contacts WHERE id=" . intval($endpoint['id']);
+    return [
+        'status' => 'SUCCESS',
+        'message' => 'Results of your search: ',
+        'db_data' => QUERY_EXE($query),
+    ];
+    /*
     return [
         'status' => 'FAIL',
         'message' => 'NON-EXISTENT ENDPOINT',
     ];
+    */
 }
 
-function get_contact_by_id($endpoint)
-{
-    if (array_key_exists('id', $endpoint)) {
-        if (filter_var($endpoint['id'], FILTER_VALIDATE_INT)) {
-            var_dump($endpoint['id']);
-            exit();
-            $query = "SELECT * FROM contacts WHERE" . intval($endpoint['id']);
-            return [
-                'status' => 'SUCCESS',
-                'message' => 'Results of your search: ',
-                'db_data' => QUERY_EXE($query),
-            ];
-        }
-    }
-}
 function post_new_contact($endpoint)
 {
         $query = "INSERT INTO contacts(name, address, phone) VALUES('" . $endpoint['name'] . "', '" . $endpoint['address'] . "', " . $endpoint['phone'] . ")";
-        $column = [];
-        $query .= ' ' . implode(',', $column);
         $new_contact = QUERY_EXE($query);
         return [
             'status' => 'SUCCESS',
             'message' => 'New contact created:',
             'NEW' => json_encode($new_contact) // Concertar dps
         ];
+}
+
+function put_contact($endpoint){
+    $query = "SELECT * FROM contacts WHERE id =" . intval($endpoint['id']);
+    $old_data = QUERY_EXE($query);
+    if (array_key_exists('id', $endpoint)) {
+        $query = "UPDATE contacts SET name = '" . $endpoint['name'] . "', address = '" . $endpoint['address'] . "', phone = '" . $endpoint['phone'] . "' WHERE id = " . intval($endpoint['id']);
+
+        return [
+            'status' => 'SUCCESS',
+            'message' => 'endpoint id matches:',
+            'old_data' => $old_data,
+        ];
+    } else {
+        return [
+            'status' => 'FAIL',
+            'message' => 'Cannot locate id' . intval($endpoint['id']),
+        ];
+    }
+
+
+}
+
+function delete_contact($endpoint)
+{
+    if (array_key_exists('id', $endpoint)) {
+        $query = "DELETE FROM contacts WHERE id =" . intval($endpoint['id']);
+
+        return QUERY_EXE($query);
+    }
+    return [
+        'status' => 'FAIL',
+        'message' => 'Could not locate the requested id',
+    ];
 }
