@@ -1,17 +1,23 @@
 <?php
 
 namespace api\classes;
+require 'database.php';
 
 abstract class Response {
 
     public $status;
     public $connection;
-    public $method = parse_str($_SERVER['REQUEST_METHOD'], $endpoint); //precisa mesmo, já ta no nome da classe
-    private $endpoint;
-    protected $data;
+    protected $method;
+    public $endpoint;
+    protected array $data;
+    public function setMethod(){
+        $this->method = $_SERVER['REQUEST_METHOD'];
+        if ($this->method == 'GET'){
 
-    private function setMehod(){
-        $this->method = parse_str($_SERVER['REQUEST_METHOD'], $this->method);
+        }
+    }
+    public function getMethod(){
+        return $this->method;
     }
     public function setEndpoint($endpoint){
         $this->endpoint = $endpoint;

@@ -1,4 +1,5 @@
 <?php
+/*
 function QUERY_EXE($query, $params = null){
 
     $dsn = "mysql:dbname=contacts;host=127.0.0.1;";
@@ -16,3 +17,4 @@ function QUERY_EXE($query, $params = null){
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
+*/

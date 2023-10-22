@@ -2,7 +2,6 @@
 
 namespace api\classes;
 
-class database
+class JSON_RESPONSE_FACTORY
 {
-
 }
