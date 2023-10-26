@@ -1,2 +1,3 @@
-.idea/
-/phpmyadmin
+.idea
+.idea/workspace.xml
+phpmyadmin
