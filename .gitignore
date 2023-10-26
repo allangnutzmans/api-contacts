@@ -1,3 +1,4 @@
 .idea/
 php-crud-api
 phpmyadmin/
+/vendor/

@@ -1,7 +1,6 @@
 <?php
 
-namespace api\classes;
-
+namespace config;
 class DB_CONN
 {
     public $conn;
