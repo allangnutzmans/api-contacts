@@ -1,7 +1,0 @@
-Endpoints
-search all products
-search all clients
-search out of stock products
-search in stock products
-search client by id_client
-search product by id_products
