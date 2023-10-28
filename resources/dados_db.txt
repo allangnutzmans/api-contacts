@@ -1,2 +1,0 @@
-user: allan
-pass: admin
