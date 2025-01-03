@@ -12,30 +12,8 @@ This project is a study on building a RESTful API for managing contacts using PH
 ## Technologies Used
 
 - **Programming Language**: PHP
-- **Paradigm**: Object-Oriented Programming (OOP)
-- **Database**: [Specify the database, e.g., MySQL, PostgreSQL]
-- **API Documentation**: [Specify the tool, e.g., Postman, Swagger]
-
-## Installation
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/allangnutzmans/api-contacts.git
-   cd api-contacts
-   
-Set up the database:
-
-Import the provided database schema into your database.
-Update the database configuration in the project (e.g., config/database.php).
-
-Start a local server:
-
-You can use PHP's built-in server for development:
-
-php -S localhost:8000 -t public
-
-Usage
+- **Paradigm**: Object-Oriented Programming (OOP) / PDO
+- **Database**: MySQL
 
 After starting the application, you can use tools like Postman or curl to interact with the API. The available endpoints are:
 
